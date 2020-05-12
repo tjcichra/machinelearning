@@ -1,0 +1,18 @@
+TD-Update:
+Q(S,A) <- Q(S,A) + α(R + γQ(S',A') - Q(S,A))
+
+Q(S,A) is an estimation of how good is it to take the action A at the state S.
+
+S: Current State of the agent
+
+A: Current Action Picked according to some policy.
+
+S': Next State where the agent ends up
+
+A': Next best action to be picked using current Q-value estimation, i.e. pick the action with the maximum Q-value in the next state.
+
+R: Current Reward observed from the environment in Response of current action.
+
+γ(>0 and <=1) : Discounting Factor for Future Rewards. Future rewards are less valuable than current rewards so they must be discounted. Since Q-value is an estimation of expected rewards from a state, discounting rule applies here as well.
+
+α: Step length taken to update the estimation of Q(S, A).
