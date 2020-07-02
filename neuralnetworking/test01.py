@@ -12,7 +12,7 @@ class NeuralNetwork:
 
 		#Create a 3x1 matrix with random values from (-1, 1).
 		self.weights = 2 * np.random.random((3, 1)) - 1
-		self.bias = 2 * np.random.random() - 1
+		self.bias = 2 * np.random.random(1) - 1
 
 	#Returns the sigmoid function result for a given x.
 	def sigmoid(self, x):
@@ -30,19 +30,54 @@ class NeuralNetwork:
 			output = self.predict(inputs)
 
 			#Calculate the cost gradient
-			costGradient = np.dot(inputs.T * 2 * (output - outputs).flatten(), self.sigmoidDerivative(output)) / len(inputs)
+			#costGradient = np.dot(inputs.T * 2 * (output - outputs).flatten(), self.sigmoidDerivative(output)) / len(inputs)
+			costGradient = self.calculateCost(inputs, outputs, output)
 
 			#Readjust the weights
 			self.weights -= costGradient
 
 			#Calculate the cost gradient for the bias
-			costGradientBias = np.dot(2 * (output - outputs).T, self.sigmoidDerivative(output))
-			costGradientBias = costGradientBias / len(inputs)
-			self.bias -= costGradientBias[0,0]
+			costBias = self.calculateBiasCost(inputs, outputs, output)
+			self.bias -= costBias
+			#costGradientBiasd = np.dot(2 * (output - outputs).T, self.sigmoidDerivative(output))
+			#costGradientBias = costGradientBias / len(inputs)
+			#self.bias -= costGradientBias[0,0]
 
 	#Learns by getting the sum of the inputs times their respective weights and then returning the sigmoid result of it.
 	def predict(self, inputs):
 		return self.sigmoid(np.dot(inputs, self.weights) + self.bias)
+
+	def calculateCost(self, inputs, outputs, output):
+		costGradient = np.zeros(self.weights.shape)
+
+		for i in range(len(self.weights)):
+			for j in range(len(self.weights[i])):
+				tsum = 0
+				for k in range(len(inputs)):
+					changeinztow = inputs[k,i]
+					changeinatoz = self.sigmoidDerivative(output[k,0])
+					changeinctoz = 2 * (output[k,0] - outputs[k,0])
+
+					changeinctow = changeinztow * changeinatoz * changeinctoz
+					tsum += changeinctow
+
+				costGradient[i,j] = tsum / len(inputs)
+		return costGradient
+
+	def calculateBiasCost(self, inputs, outputs, output):
+		costBias = np.zeros(self.bias.shape)
+
+		for i in range(len(self.bias)):
+			tsum = 0
+			for k in range(len(inputs)):
+				changeinztob = 1
+				changeinatoz = self.sigmoidDerivative(output[k,0])
+				changeinctoa = 2 * (output[k,0] - outputs[k,0])
+
+				changeinctob = changeinztob * changeinatoz * changeinctoa
+				tsum += changeinctob
+			costBias[i] = tsum / len(inputs)
+		return costBias
 
 #Create neural network object
 n = NeuralNetwork()
@@ -63,7 +98,7 @@ if len(sys.argv) == 1:
 
 	#Write the bias to the file
 	f.write("\n")
-	f.write(str(n.bias))
+	f.write(str(n.bias[0]))
 
 	#Close file
 	f.close()
