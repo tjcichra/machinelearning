@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import numpy as np
+import propagationlogic as pl
 import sys
 
 #Sample code from https://www.geeksforgeeks.org/implementing-ann-training-process-in-python/
@@ -31,13 +32,13 @@ class NeuralNetwork:
 
 			#Calculate the cost gradient
 			#costGradient = np.dot(inputs.T * 2 * (output - outputs).flatten(), self.sigmoidDerivative(output)) / len(inputs)
-			costGradient = self.calculateCost(inputs, outputs, output)
+			costGradient = pl.calculateCost(self.weights, inputs, outputs, output, self.sigmoidDerivative)
 
 			#Readjust the weights
 			self.weights -= costGradient
 
 			#Calculate the cost gradient for the bias
-			costBias = self.calculateBiasCost(inputs, outputs, output)
+			costBias = pl.calculateBiasCost(self.bias, inputs, outputs, output, self.sigmoidDerivative)
 			self.bias -= costBias
 			#costGradientBiasd = np.dot(2 * (output - outputs).T, self.sigmoidDerivative(output))
 			#costGradientBias = costGradientBias / len(inputs)

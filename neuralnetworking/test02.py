@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import numpy as np
+import propagationlogic as pl
 import sys
 
 #Sample code from https://www.geeksforgeeks.org/implementing-ann-training-process-in-python/
@@ -11,7 +12,7 @@ class NeuralNetwork:
 		#np.random.seed(1)
 
 		#Create a 3x2 matrix with random values from (-1, 1).
-		self.weights = 2 * np.random.random((2, 2)) - 1
+		self.weights = 2 * np.random.random((3, 2)) - 1
 
 		#Create a 2 array with random values from (-1, 1).
 		self.biases = 2 * np.random.random(2) - 1
@@ -32,13 +33,16 @@ class NeuralNetwork:
 			output = self.predict(inputs)
 
 			#Calculate the cost gradient
-			costGradient = np.dot(inputs.T * np.sum(2 * (output - outputs), axis=1), self.sigmoidDerivative(output)) / len(inputs)
+			#costGradient = np.dot(inputs.T * np.sum(2 * (output - outputs), axis=1), self.sigmoidDerivative(output)) / len(inputs)
+			costGradient = pl.calculateCost(self.weights, inputs, outputs, output, self.sigmoidDerivative)
 
 			#Adjust the weights by a factor
 			self.weights -= costGradient
 
-			costGradientBias = np.dot(np.sum(2 * (output - outputs), axis = 1, keepdims=True).T, self.sigmoidDerivative(output)) / len(inputs)
-			self.biases -= costGradientBias.flatten()
+			#costGradientBias = np.dot(np.sum(2 * (output - outputs), axis = 1, keepdims=True).T, self.sigmoidDerivative(output)) / len(inputs)
+			costGradientBias = pl.calculateBiasCost(self.biases, inputs, outputs, output, self.sigmoidDerivative)
+
+			self.biases -= costGradientBias
 
 	#Learns by getting the sum of the inputs times their respective weights and then returning the sigmoid result of it.
 	def predict(self, inputs):
@@ -49,8 +53,8 @@ n = NeuralNetwork()
 
 if len(sys.argv) == 1:
 	#Provide the training inputs and outputs
-	inputs = np.array([[1, 1], [0, 1], [0, 0], [1, 0]])
-	outputs = np.array([[1, 1], [0, 1], [0, 0], [1, 0]])
+	inputs = np.array([[1, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1]])
+	outputs = np.array([[1, 0], [1, 1], [0, 0], [0, 1]])
 
 	#Train the neural network
 	n.train(inputs, outputs, 10000)
@@ -88,6 +92,6 @@ else:
 		z += 1
 
 	#Print out result from examples
-	examples = np.array([[0, 0], [1, 0]])
+	examples = np.array([[0, 0, 1], [1, 1, 0]])
 	for example in examples:
 		print(example, " might output:", n.predict(example))
